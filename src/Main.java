@@ -2,15 +2,34 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Room forest = new Room("Skogen", "Du står i en mörk skog med höga träd.");
+        //Room forest = new Room("Skogen", "Du står i en mörk skog med höga träd.");
+        Room doorEnding = new Room("Dörren", "Rötter täcker en gammal dörr i den finaste mahogny du nånsin skådat");
+        Room redwood = new Room("Trädet", "Framför dig ser du ett massivt redwood träd som sträcker sig långt över molnen");
         Room cave = new Room("Grottan", "Inne i skogen ser du en klippväg med nåt glimmande i en skåra");
         Room glade = new Room("Gläntan", "Du står i en glänta. Framför dig ser du en igenväxt stig åt ett håll, åt andra är en bäck");
-        Room redwood = new Room("Trädet", "Framför dig ser du ett massivt redwood träd som sträcker sig långt över molnen");
-        Room thorn = new Room("Igenväxta stigen", "Rosenbuskar river upp din kropp");
+        Room river = new Room("Bäcken", "Vid bäcken ser du en blodig väska och längre bort hör du en sprakande brasa.");
         Room camp = new Room("Eldstaden", "Du värmer upp dig");
         Room cottage = new Room("Stugan", "På en stubbe stugan sitter ett litet troll som ger dig en varm blick");
-        Room river = new Room("Bäcken", "Vid bäcken ser du en blodig väska och längre bort hör du en sprakande brasa.");
-        Room doorEnding = new Room("Dörren", "Rötter täcker en gammal dörr i den finaste mahogny du nånsin skådat");
+
+        glade.connectRoom("Åt ena hållet ser du en snårig stig", cave);
+        glade.connectRoom("den andra stigen leder dig till en pålande bäck\"", river);
+
+        cave.connectRoom("Åt ena hållet ser du en snårig stig", glade);
+        cave.connectRoom("Du ser ett massivt träd långt bort", redwood);
+
+        redwood.connectRoom("En stig med klippor runt om", cave);
+        redwood.connectRoom("Du ser inte mycket mer än en övervuxen stig fylld av rosenbuskar", doorEnding);
+        redwood.connectRoom("En brinnande eldstad", camp);
+
+        camp.connectRoom("Massivt träd", redwood);
+        camp.connectRoom("En röd stuga uppe på en kulle", cottage);
+        camp.connectRoom("Du hör en pålande bäck", river);
+
+        river.connectRoom("En sprakande eldstad", camp);
+        river.connectRoom("Solen lyser upp mot en familjär plats", glade);
+
+        doorEnding.connectRoom("Gå tillbaka genom rosenbuskarna", redwood);
+
 
 
         Treasure gold = new Treasure("guldmynt", "Det glimmar vackert i ljuset.");
@@ -26,133 +45,44 @@ public class Main {
         Npc troll = new Npc("troll", "Trollet är en stor och stark varelse med gröna, skrovliga hud och långa klor. Det är både kraftfullt och klokt. \n Djupt inne i skogen förvarar det en magisk nyckel, skapad av stjärnljus. För att få nyckeln måste du besvara dess gåtor, som viskar genom natten.");
 
 
-        forest.addInteractable("guldmynt", gold);
+        //forest.addInteractable("guldmynt", gold);
         camp.addInteractable("goblin", goblin);
         cave.addInteractable("skåra", knife);
         river.addInteractable("blodigpåse", bloodyPouch);
 
         Player player = new Player("Äventyrare");
+        player.moveTo(glade);
 
         Scanner scanner = new Scanner(System.in);
         boolean playing = true;
 
         System.out.println("Välkommen till Äventyrsspelet!");
 
-        player.moveTo(glade);
 
         while (playing) {
-            System.out.println("\nVad vill du göra?");
-            if (player.getCurrentRoom() == doorEnding) {
-                System.out.println("1. Gå mot " + thorn.getName() + " men vägen ser snårig ut");
-                System.out.println("2. Knacka på dörren");// vägvalet
 
-                System.out.println("\nVad vill du göra?");
-            } else if (player.getCurrentRoom() == river) {
-                System.out.println(river.getDescription());
-                System.out.println("1. Gå mot " + glade.getName()); // vägvalet
-                System.out.println("2. Gå mot " + camp.getName());
-
-                System.out.println("\nVad vill du göra?");
-            } else if (player.getCurrentRoom() == cottage) {
-                System.out.println(cottage.getDescription());
-                System.out.println("1. Tala med " + troll.getName()); // vägvalet
-                System.out.println("2. Gå mot " + camp.getName());
-            }// vägvalet
-            else if (player.getCurrentRoom() == camp) {
-                System.out.println(camp.getDescription());
-                System.out.println("1. Gå mot " + cottage.getName()); // vägvalet
-                System.out.println("2. Gå mot " + river.getName()); // vägvalet
-                System.out.println("3. Gå mot " + redwood.getName()); // vägvalet
-            } else if (player.getCurrentRoom() == redwood) {
-                System.out.println(redwood.getDescription());
-                System.out.println("1. Gå mot" + thorn.getName() + " men vägen ser snårig ut"); // vägvalet
-                System.out.println("2. Gå mot" + camp.getName()); // vägvalet
-                System.out.println("3. Gå mot" + cave.getName());
-            }// vägvalet
-            else if (player.getCurrentRoom() == cave) {
-                System.out.println(cave.getDescription());
-                System.out.println("1. Gå till skåran");
-                System.out.println("2. Gå mot" + glade.getName() + " men vägen ser snårig ut"); // vägvalet
-                System.out.println("3. Gå mot" + redwood.getName()); // vägvalet
-            } else if (player.getCurrentRoom() == glade) {
-                System.out.println(glade.getDescription());
-                System.out.println("1. Gå mot en av vägen "); // vägvalet
-                //System.out.println("2. Gå mot" + river.getName());
-            }
-            System.out.println("2. Interagera med något");
-            System.out.println("3. Avsluta spelet");
+            System.out.println(player.getCurrentRoom().getDescription());
+            System.out.println("1. Gå vidare");
+            System.out.println("2. Gå till");
+            System.out.println("3. Avsluta spel");
 
             String choice = scanner.nextLine();
 
             switch (choice) {
                 case "1":
-                    if (player.getCurrentRoom() == glade) {
-                        System.out.println("1 eller 2");
-                        choice = scanner.nextLine();
-                        if (choice.equalsIgnoreCase("1")) {
-                            player.moveTo(cave);
-                            player.changePlayerHealth(-10);
-                        } else if (choice.equalsIgnoreCase("2")) {
-                            player.moveTo(river);
-                        }
-                    } else if (player.getCurrentRoom() == cave) {
-                        choice = scanner.nextLine();
-                        if (choice.equalsIgnoreCase("1")) {
-                            player.moveTo(redwood);
-                        } else if (choice.equalsIgnoreCase("2")) {
-                            player.moveTo(glade);
-                        }
-                    } else if (player.getCurrentRoom() == redwood) {
-                        choice = scanner.nextLine();
-                        if (choice.equalsIgnoreCase("1")) {
-                            player.moveTo(thorn);
-                            player.changePlayerHealth(-10);
-                        } else if (choice.equalsIgnoreCase("2")) {
-                            player.moveTo(camp);
-                        } else if (choice.equalsIgnoreCase("3")) {
-                            player.moveTo(cave);
-                        }
-                    } else if (player.getCurrentRoom() == camp) {
-                        choice = scanner.nextLine();
-                        if (choice.equalsIgnoreCase("1")) {
-                            player.moveTo(cottage);
-                        } else if (choice.equalsIgnoreCase("2")) {
-                            player.moveTo(river);
-                        } else if (choice.equalsIgnoreCase("3")) {
-                            player.moveTo(redwood);
-                        }
-                    } else if (player.getCurrentRoom() == cottage) {
-                        player.moveTo(camp);
+                    Room currentRoom = player.getCurrentRoom();
+                    currentRoom.showConnectedRoomsWithNumbers();
 
-                    } else if (player.getCurrentRoom() == river) {
-                        choice = scanner.nextLine();
-                        if (choice.equalsIgnoreCase("1")) {
-                            player.moveTo(glade);
-                        } else if (choice.equalsIgnoreCase("2")) {
-                            player.moveTo(camp);
-                        }
-                    } else if (player.getCurrentRoom() == thorn) {
-                        choice = scanner.nextLine();
-                        if (choice.equalsIgnoreCase("1")) {
-                            player.moveTo(doorEnding);
-                        } else if (choice.equalsIgnoreCase("2")) {
-                            player.moveTo(redwood);
-                            player.changePlayerHealth(-10);
-                        }
-                    } else if (player.getCurrentRoom() == doorEnding) {
-                        choice = scanner.nextLine();
-                        if (choice.equalsIgnoreCase("1")) {
-                            player.moveTo(redwood);
-                        } else if (choice.equalsIgnoreCase("2")) {
+                    String roomChoice = scanner.nextLine();
+                    Room nextRoom = currentRoom.getConnectRoomByNumber(roomChoice);
 
-                            System.out.println("Inget svar");
-                        }
+                    if (nextRoom != null) {
+                        player.moveTo(nextRoom);
                     } else {
                         System.out.println("Ogiltigt val.");
                     }
-                    break;
                 case "2":
-                    Room currentRoom = player.getCurrentRoom();
+                    currentRoom = player.getCurrentRoom();
                     if (currentRoom.hasInteractables()) {
                         System.out.println("Du kan interagera med följande:");
                         currentRoom.showInteractablesWithNumbers();
